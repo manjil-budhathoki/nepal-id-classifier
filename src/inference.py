@@ -4,12 +4,11 @@ from PIL import Image
 import torch.nn as nn
 import os
 
-# --- 1. SETUP (Must match your training code exactly) ---
 
 # Define the classes exactly as they were during training
 class_names = ['back', 'front', 'not_id']
 
-# Define the SquarePad again (Preprocessing must be identical)
+# Define the SquarePad again 
 class SquarePad:
     def __call__(self, image):
         w, h = image.size
@@ -20,7 +19,7 @@ class SquarePad:
         p_bottom = max_wh - h - p_top
         return transforms.functional.pad(image, (p_left, p_top, p_right, p_bottom), fill=0, padding_mode='constant')
 
-# Define the transform (Same as 'val_transform' in training)
+# Define the transform 
 inference_transform = transforms.Compose([
     SquarePad(),
     transforms.Resize((224, 224)),
@@ -28,7 +27,7 @@ inference_transform = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-# --- 2. LOAD THE SAVED MODEL ---
+# --- LOAD THE SAVED MODEL ---
 
 def load_model(model_path='best_model.pth'):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -47,7 +46,7 @@ def load_model(model_path='best_model.pth'):
     
     return model, device
 
-# --- 3. PREDICT FUNCTION ---
+# --- PREDICT FUNCTION ---
 
 def predict_image(image_path, model, device):
     if not os.path.exists(image_path):
@@ -56,7 +55,7 @@ def predict_image(image_path, model, device):
     image = Image.open(image_path)
     
     # Preprocess
-    image_tensor = inference_transform(image).unsqueeze(0) # Add batch dimension (1, 3, 224, 224)
+    image_tensor = inference_transform(image).unsqueeze(0)
     image_tensor = image_tensor.to(device)
     
     # Predict
@@ -80,13 +79,12 @@ def predict_image(image_path, model, device):
     
     return predicted_class
 
-# --- 4. RUN IT ---
+# --- RUN IT ---
 
 if __name__ == "__main__":
     # Load model once
     model, device = load_model('best_model.pth')
-    
-    # REPLACE THIS with the path to an image you want to test
+
     test_image = "hello.jpeg"
     
     predict_image(test_image, model, device)

@@ -4,15 +4,14 @@ import torch.nn as nn
 from torchvision import transforms, models
 from PIL import Image
 import numpy as np
-import cv2  # Needed for the heatmap colors
+import cv2  
 
-# --- 1. CONFIGURATION ---
-# IMPORTANT: Must match folder order: 0=back, 1=front, 2=not_id
+# ---  CONFIGURATION ---
 CLASS_NAMES = ['back', 'front', 'not_id'] 
 MODEL_PATH = 'best_model.pth'
 CONFIDENCE_THRESHOLD = 60.0
 
-# --- 2. GRAD-CAM CLASS ---
+# ---  GRAD-CAM CLASS ---
 class GradCAM:
     def __init__(self, model, target_layer):
         self.model = model
@@ -47,7 +46,7 @@ class GradCAM:
         heatmap /= torch.max(heatmap)
         return heatmap.numpy(), output
 
-# --- 3. HELPER FUNCTIONS ---
+# --- HELPER FUNCTIONS ---
 class SquarePad:
     def __call__(self, image):
         w, h = image.size
@@ -90,7 +89,7 @@ def overlay_heatmap(heatmap, original_image):
     superimposed_img = heatmap * 0.4 + img_cv * 0.6
     return Image.fromarray(np.uint8(superimposed_img)[:, :, ::-1])
 
-# --- 4. STREAMLIT APP ---
+# --- STREAMLIT APP ---
 st.set_page_config(page_title="ID Explainability", page_icon="🔍")
 st.title("🇳🇵 Smart ID Scanner (with AI Vision)")
 
@@ -138,7 +137,7 @@ if uploaded_file:
     st.markdown(f"### Result: **{final_class.upper()}**")
     st.caption(confidence_msg)
 
-    # --- DETAILED CONFIDENCE BARS (NEW SECTION) ---
+    # --- DETAILED CONFIDENCE BARS ---
     st.divider()
     st.subheader("📊 Confidence Breakdown")
     st.write("This shows how confused the model was:")
